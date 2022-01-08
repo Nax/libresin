@@ -55,8 +55,12 @@
 # define RESIN_PROCS 1
 #endif
 
-#ifndef GLAPI
-#define GLAPI extern
+#if !defined(GLAPI)
+# if defined(__cplusplus)
+#  define GLAPI extern "C"
+# else
+#  define GLAPI extern
+# endif
 #endif
 
 typedef unsigned int    GLenum;
@@ -122,7 +126,7 @@ typedef void (RESIN_APIENTRY *GLVULKANPROCNV)(void);
 %GENERATED%
 
 #ifdef RESIN_PROCS
-#undef RESIN_PROCS
+# undef RESIN_PROCS
 #endif
 
 #undef RESIN_GL_VERSION
