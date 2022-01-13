@@ -121,12 +121,14 @@ class Builder:
     self.out.write("#define %-60s %s\n" % (enum.name, enum.value))
 
   def gen_feature_set(self, fs):
-    version_major = int(fs.version_min / 10)
-    version_minor = int(fs.version_min % 10)
+    version_major = fs.version_min // 10
+    version_minor = fs.version_min % 10
 
-    self.out.write(f"/* OpenGL {version_major}.{version_minor} */\n")
-    self.out.write(f"#if (RESIN_GL_VERSION >= {fs.version_min})\n")
-    self.out.write(f"#define GL_VERSION_{version_major}_{version_minor} 1\n")
+    check = not ((version_major == 1) and (version_minor == 0))
+
+    if check:
+      self.out.write("#if (RESIN_GL_VERSION >= %d)\n" % fs.version_min)
+    self.out.write(f"#define %s_VERSION_%d_%d 1\n" % (self.api.upper(), version_major, version_minor))
     self.out.write("\n")
     for e in fs.enums:
       self.gen_enum(e)
@@ -137,7 +139,8 @@ class Builder:
     self.out.write("#ifdef RESIN_PROCS\n")
     for f in fs.funcs:
       self.out.write(f.c_pfn())
-    self.out.write("#endif\n")
+    if check:
+      self.out.write("#endif\n")
     self.out.write("#endif\n\n")
 
   def gen_decls(self):
