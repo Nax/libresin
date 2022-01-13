@@ -3,9 +3,11 @@ if (GENERATE_CODE)
 
   set(REGISTRY_COMMIT "92ab62262a8ee313dfd5bbdbed00acbec96fe80c")
   set(REGISTRY_XML_GL "https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/${REGISTRY_COMMIT}/xml/gl.xml")
+  set(REGISTRY_XML_WGL "https://raw.githubusercontent.com/KhronosGroup/OpenGL-Registry/${REGISTRY_COMMIT}/xml/wgl.xml")
 
   set(XML_DIR "${CMAKE_BINARY_DIR}/xml/${REGISTRY_COMMIT}")
-  set(XML_GL "${XML_DIR}/gl.xml")
+  set(XML_GL  "${XML_DIR}/gl.xml")
+  set(XML_WGL "${XML_DIR}/wgl.xml")
 
   set(GENERATED_SOURCE_DIR "${CMAKE_BINARY_DIR}/src")
   set(GENERATED_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include")
@@ -17,22 +19,31 @@ if (GENERATE_CODE)
   set(CODEGEN_PY  "${CMAKE_SOURCE_DIR}/codegen/codegen.py")
   set(GL_H_IN     "${CMAKE_SOURCE_DIR}/codegen/gl.h.in")
   set(GL_H        "${GENERATED_INCLUDE_DIR}/resin/gl.h")
+  set(WGL_H_IN    "${CMAKE_SOURCE_DIR}/codegen/wgl.h.in")
+  set(WGL_H       "${GENERATED_INCLUDE_DIR}/resin/wgl.h")
 
   if (NOT EXISTS "${XML_GL}")
     file(DOWNLOAD "${REGISTRY_XML_GL}" "${XML_GL}" SHOW_PROGRESS)
   endif()
 
+  if (NOT EXISTS "${XML_WGL}")
+    file(DOWNLOAD "${REGISTRY_XML_WGL}" "${XML_WGL}" SHOW_PROGRESS)
+  endif()
+
   add_custom_command(
     OUTPUT
       "${GL_H}"
+      "${WGL_H}"
     DEPENDS
       "${CODEGEN_PY}"
       "${XML_GL}"
+      "${XML_WGL}"
       "${GL_H_IN}"
+      "${WGL_H_IN}"
     COMMAND
-      "${Python3_EXECUTABLE}" "${CODEGEN_PY}" "${GL_H_IN}" "${XML_GL}" "${GL_H}"
+      "${Python3_EXECUTABLE}" "${CODEGEN_PY}" "${CMAKE_SOURCE_DIR}/codegen" "${XML_DIR}" "${GENERATED_INCLUDE_DIR}/resin"
     COMMENT
-      "Generating resin/gl.h"
+      "Generating code"
     VERBATIM
   )
   set(ROOT "${CMAKE_BINARY_DIR}")

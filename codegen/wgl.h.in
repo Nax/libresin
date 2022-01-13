@@ -1,0 +1,33 @@
+#ifndef RESIN_WGL_H
+#define RESIN_WGL_H 1
+
+#if defined(__wgl_wgl_h_)
+# error "The system WGL header should not be included before resin"
+#endif
+#define __wgl_wgl_h_ 1
+
+#include <resin/common.h>
+
+#if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
+# define WIN32_LEAN_AND_MEAN 1
+# define VC_EXTRALEAN 1
+# include <windows.h>
+#endif
+
+#if !defined(RESIN_LEAN)
+# define APIENTRY       RESIN_APIENTRY
+# define APIENTRYP      APIENTRY*
+# define RESIN_PROCS    1
+#endif
+
+#if defined(RESIN_EXPOSE_PROCS) && !defined(RESIN_PROCS)
+# define RESIN_PROCS 1
+#endif
+
+%GENERATED%
+
+#ifdef RESIN_PROCS
+# undef RESIN_PROCS
+#endif
+
+#endif
