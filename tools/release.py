@@ -11,5 +11,5 @@ tag = "v%s" % version
 print("Creating tag %s..." % tag)
 os.system("git tag -a %s -m '%s'" % (tag, tag))
 print("Pushing tag %s..." % tag)
-os.system("git push %s" % tag)
+os.system("git push origin %s" % tag)
 print("Version %s released" % tag)
