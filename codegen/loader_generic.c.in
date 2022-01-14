@@ -1,0 +1,7 @@
+#include <resin/resin.h>
+#include <resin/gl.h>
+#if defined(_WIN32)
+# include <resin/wgl.h>
+#endif
+
+%GENERATED%

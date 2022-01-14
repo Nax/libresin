@@ -38,8 +38,6 @@
 #endif
 
 #if !defined(RESIN_LEAN)
-# define APIENTRY       RESIN_APIENTRY
-# define APIENTRYP      APIENTRY*
 # define RESIN_PROCS    1
 #endif
 

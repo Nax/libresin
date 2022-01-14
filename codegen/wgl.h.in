@@ -14,9 +14,23 @@
 # include <windows.h>
 #endif
 
+typedef HANDLE HPBUFFERARB;
+typedef HANDLE HPBUFFEREXT;
+typedef HANDLE HGPUNV;
+typedef HANDLE HVIDEOOUTPUTDEVICENV;
+typedef HANDLE HVIDEOINPUTDEVICENV;
+typedef HANDLE HPVIDEODEV;
+
+struct _GPU_DEVICE {
+    DWORD  cb;
+    CHAR   DeviceName[32];
+    CHAR   DeviceString[128];
+    DWORD  Flags;
+    RECT   rcVirtualScreen;
+};
+typedef struct _GPU_DEVICE *PGPU_DEVICE;
+
 #if !defined(RESIN_LEAN)
-# define APIENTRY       RESIN_APIENTRY
-# define APIENTRYP      APIENTRY*
 # define RESIN_PROCS    1
 #endif
 

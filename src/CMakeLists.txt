@@ -9,8 +9,8 @@ if (GENERATE_CODE)
   set(XML_GL  "${XML_DIR}/gl.xml")
   set(XML_WGL "${XML_DIR}/wgl.xml")
 
-  set(GENERATED_SOURCE_DIR "${CMAKE_BINARY_DIR}/src")
-  set(GENERATED_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include")
+  set(GENERATED_SOURCE_DIR "${CMAKE_BINARY_DIR}/gen/src")
+  set(GENERATED_INCLUDE_DIR "${CMAKE_BINARY_DIR}/gen/include")
 
   make_directory("${XML_DIR}")
   make_directory("${GENERATED_SOURCE_DIR}")
@@ -21,6 +21,9 @@ if (GENERATE_CODE)
   set(GL_H        "${GENERATED_INCLUDE_DIR}/resin/gl.h")
   set(WGL_H_IN    "${CMAKE_SOURCE_DIR}/codegen/wgl.h.in")
   set(WGL_H       "${GENERATED_INCLUDE_DIR}/resin/wgl.h")
+
+  set(LOADER_GENERIC_C_IN "${CMAKE_SOURCE_DIR}/codegen/loader_generic.c.in")
+  set(LOADER_GENERIC_C    "${GENERATED_SOURCE_DIR}/loader_generic.c")
 
   if (NOT EXISTS "${XML_GL}")
     file(DOWNLOAD "${REGISTRY_XML_GL}" "${XML_GL}" SHOW_PROGRESS)
@@ -34,34 +37,48 @@ if (GENERATE_CODE)
     OUTPUT
       "${GL_H}"
       "${WGL_H}"
+      "${LOADER_GENERIC_C}"
     DEPENDS
       "${CODEGEN_PY}"
       "${XML_GL}"
       "${XML_WGL}"
       "${GL_H_IN}"
       "${WGL_H_IN}"
+      "${LOADER_GENERIC_C_IN}"
     COMMAND
-      "${Python3_EXECUTABLE}" "${CODEGEN_PY}" "${CMAKE_SOURCE_DIR}/codegen" "${XML_DIR}" "${GENERATED_INCLUDE_DIR}/resin"
+      "${Python3_EXECUTABLE}" "${CODEGEN_PY}" "${CMAKE_SOURCE_DIR}/codegen" "${XML_DIR}" "${GENERATED_INCLUDE_DIR}/resin" "${GENERATED_SOURCE_DIR}"
     COMMENT
       "Generating code"
     VERBATIM
   )
-  set(ROOT "${CMAKE_BINARY_DIR}")
+  set(ROOT "${CMAKE_BINARY_DIR}/gen/")
 else()
   set(ROOT "${CMAKE_SOURCE_DIR}")
 endif()
 
 set(SOURCES
   "${ROOT}/include/resin/gl.h"
-  resin.c
+  "${ROOT}/src/loader_generic.c"
+  support_common.c
 )
 
 if (WIN32)
-  list(APPEND SOURCES "${CMAKE_SOURCE_DIR}/src/loader_win32.c")
+  list(APPEND SOURCES "${CMAKE_SOURCE_DIR}/src/support_win32.c")
 endif()
 
 add_library(libresin STATIC ${SOURCES})
 if (NOT WIN32)
   set_target_property(libresin OUTPUT_NAME "resin")
 endif()
-include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_BINARY_DIR}/include")
+include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_BINARY_DIR}/gen/include")
+
+install(TARGETS libresin ARCHIVE DESTINATION lib)
+install(
+  FILES
+    "${CMAKE_SOURCE_DIR}/include/resin/common.h"
+    "${CMAKE_SOURCE_DIR}/include/resin/resin.h"
+    "${ROOT}/include/resin/gl.h"
+    "${ROOT}/include/resin/wgl.h"
+  DESTINATION
+    "include/resin"
+)
