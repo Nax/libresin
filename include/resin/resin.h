@@ -1,6 +1,8 @@
 #ifndef RESIN_RESIN_H
 #define RESIN_RESIN_H 1
 
+#include <resin/config.h>
+
 #if defined(__cplusplus)
 # define RESIN_API extern "C"
 #else

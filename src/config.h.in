@@ -1,0 +1,10 @@
+#ifndef RESIN_CONFIG_H
+#define RESIN_CONFIG_H 1
+
+#define RESIN_VERSION_MAJOR             @RESIN_VERSION_MAJOR@
+#define RESIN_VERSION_MINOR             @RESIN_VERSION_MINOR@
+#define RESIN_VERSION_PATCH             @RESIN_VERSION_PATCH@
+#cmakedefine RESIN_VERSION_REVISION     "@RESIN_VERSION_REVISION@"
+#define RESIN_VERSION                   "@RESIN_VERSION@"
+
+#endif

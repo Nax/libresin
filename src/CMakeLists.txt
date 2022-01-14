@@ -1,3 +1,13 @@
+if (NOT MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -fomit-frame-pointer -fstrict-aliasing -fno-exceptions -fno-rtti")
+else()
+    string(REGEX REPLACE "/GR" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    string(REGEX REPLACE "/W[0-4]" "/W3" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHs-c- /GR-")
+    add_definitions(-D_HAS_EXCEPTIONS=0 -D_CRT_SECURE_NO_WARNINGS=1)
+endif()
+
 if (GENERATE_CODE)
   find_package(Python3 REQUIRED)
 
@@ -56,7 +66,14 @@ else()
   set(ROOT "${CMAKE_SOURCE_DIR}")
 endif()
 
+if (WIN32)
+  set(CMAKE_DEBUG_POSTFIX d)
+endif()
+
+make_directory("${CMAKE_BINARY_DIR}/include/resin")
+configure_file("${CMAKE_SOURCE_DIR}/src/config.h.in" "${CMAKE_BINARY_DIR}/include/resin/config.h")
 set(SOURCES
+  "${CMAKE_BINARY_DIR}/include/resin/config.h"
   "${ROOT}/include/resin/gl.h"
   "${ROOT}/src/loader_generic.c"
   support_common.c
@@ -70,11 +87,12 @@ add_library(libresin STATIC ${SOURCES})
 if (NOT WIN32)
   set_target_property(libresin OUTPUT_NAME "resin")
 endif()
-include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_BINARY_DIR}/gen/include")
+include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_BINARY_DIR}/include" "${CMAKE_BINARY_DIR}/gen/include")
 
 install(TARGETS libresin ARCHIVE DESTINATION lib)
 install(
   FILES
+    "${CMAKE_BINARY_DIR}/include/resin/config.h"
     "${CMAKE_SOURCE_DIR}/include/resin/common.h"
     "${CMAKE_SOURCE_DIR}/include/resin/resin.h"
     "${ROOT}/include/resin/gl.h"
