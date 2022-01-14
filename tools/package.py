@@ -8,7 +8,7 @@ import sys
 import subprocess
 import shutil
 
-shutil.rmtree('build_pkg')
+shutil.rmtree('build_pkg', ignore_errors=True)
 
 version = None
 with open('VERSION', 'r') as f:
